@@ -49,11 +49,13 @@ node src/cli.mjs serve 4600     # 换端口
 
 打开 <http://127.0.0.1:4571/> 就是本地面板（添加网站 / 扫码登录 / 验证 / 读取 / 一键巡检）。
 
+**后台启动脚本**：Windows 用 `scripts\start-service.ps1`（隐藏窗口、日志写 data/server.log），Linux/macOS 用 `scripts/start-service.sh`。
+
 **开机自启**（Windows）：
 
 1. 新建快捷方式，目标填 `node "C:\path\to\lexmount-patrol\src\cli.mjs" serve`；
 2. `Win+R` → `shell:startup`，把快捷方式丢进去；
-3. 或者用「任务计划程序」创建「登录时运行」的任务（更稳）。
+3. 或者用「任务计划程序」创建「登录时运行」的任务（更稳）；非管理员账号可能无法用 schtasks 命令行创建，用图形界面即可。
 
 Linux / macOS 可以用 systemd / launchd，或者 `nohup node src/cli.mjs serve &`。
 

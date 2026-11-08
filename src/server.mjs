@@ -10,7 +10,8 @@ import { startLogin, verifyLogin, cancelLogin, listPending, shotPathOf, judgeLog
 import { runBrief } from './brief.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
-const PORT = Number(process.env.LEXMOUNT_API_PORT || process.argv[2] || 4571)
+const argPort = [process.argv[2], process.argv[3]].find((x) => /^\d+$/.test(String(x || '')))
+const PORT = Number(process.env.LEXMOUNT_API_PORT || argPort || 4571)
 const TOKEN = String(process.env.LEXMOUNT_API_TOKEN || '').trim()
 const STARTED = Date.now()
 const JOBS = new Map()

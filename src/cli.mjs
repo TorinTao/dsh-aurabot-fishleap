@@ -53,7 +53,7 @@ async function main() {
     return
   }
   if (cmd === 'serve') {
-    if (rest[0]) process.env.LEXMOUNT_API_PORT = String(rest[0])
+    if (rest[0] && /^\d+$/.test(rest[0])) process.env.LEXMOUNT_API_PORT = String(rest[0])
     await import('./server.mjs')
     return
   }
