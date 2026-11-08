@@ -8,6 +8,7 @@ import { createApp, ROOT_DIR, OUT_DIR } from './host.mjs'
 import { listSites, addSite, removeSite, resolveSite, recordStatus } from './registry.mjs'
 import { startLogin, verifyLogin, cancelLogin, listPending, shotPathOf, judgeLogin } from './login.mjs'
 import { runBrief } from './brief.mjs'
+import { listContexts, sharedContextId, setSharedContext } from './contexts.mjs'
 
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..')
 const argPort = [process.argv[2], process.argv[3]].find((x) => /^\d+$/.test(String(x || '')))
@@ -92,6 +93,19 @@ async function main() {
       if (req.method === 'GET' && p === '/api/usage') {
         const r = await callTool('lx_status', {})
         return json(res, 200, { ok: true, message: r.message })
+      }
+      if (req.method === 'GET' && p === '/api/contexts') {
+        const contexts = await listContexts()
+        return json(res, 200, {
+          ok: true,
+          shared: sharedContextId(),
+          count: contexts.length,
+          contexts: contexts.map((c) => ({ id: c.context_id, locked: c.locked, description: c.display_name || c.description || '' })),
+        })
+      }
+      if (req.method === 'POST' && p === '/api/settings/shared') {
+        const b = await readBody(req)
+        return json(res, 200, { ok: true, shared: setSharedContext(b.contextId) })
       }
       if (req.method === 'GET' && p === '/api/sites') {
         return json(res, 200, { ok: true, sites: listSites(), pending: listPending() })

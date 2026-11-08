@@ -42,6 +42,7 @@
   <header>
     <h1>Lexmount 多平台巡检</h1>
     <span id="health" class="muted">连接中…</span>
+    <span id="ctxInfo" class="muted"></span>
     <span class="grow"></span>
     <button id="btnRefresh">刷新</button>
   </header>
@@ -62,7 +63,7 @@
     <div class="row" style="margin-top:8px"><input id="fHome" class="grow" placeholder="首页 https://www.example.com/"></div>
     <div class="row" style="margin-top:8px"><input id="fLogin" class="grow" placeholder="登录页（留空=首页）"></div>
     <div class="row" style="margin-top:8px"><input id="fSearch" class="grow" placeholder="站内搜索模板（可选），关键词用 {q}，例 https://example.com/search?q={q}"></div>
-    <div class="row" style="margin-top:10px"><button id="btnAdd" class="primary">添加并连接</button></div>
+    <div class="row" style="margin-top:10px"><button id="btnAdd" class="primary">添加并连接</button><span class="muted">Context 达到套餐上限时会自动复用共享 Context（同一个配置文件可登录多个站）</span></div>
   </section>
 
   <section class="card">
@@ -121,6 +122,10 @@ async function refresh() {
     renderPending(d.pending, d.sites);
     const u = await api('/api/usage');
     $('usage').textContent = u.message || '';
+    try {
+      const cx = await api('/api/contexts');
+      $('ctxInfo').textContent = `Context ${cx.count} 个${cx.shared ? ' · 共享态 ' + cx.shared.slice(0, 8) : ''}`;
+    } catch { $('ctxInfo').textContent = ''; }
   } catch (e) { $('health').textContent = '服务不可用：' + e.message; }
 }
 

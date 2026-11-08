@@ -73,7 +73,7 @@ Linux / macOS 可以用 systemd / launchd，或者 `nohup node src/cli.mjs serve
 | 现象 | 处理 |
 |---|---|
 | 小肥鱼说「连不上 Lexmount 插件服务」 | 服务没起：`node src/cli.mjs serve`；或端口改了要同步 Aurobot 模块设置里的 `baseUrl` |
-| 「创建 Context 失败（可能已满 10 个）」 | Lexmount 一个项目最多 10 个 Context，去控制台删掉不用的，或复用已有站的 Context |
+| 「创建 Context 失败（Context limit reached）」 | Lexmount 的 Context 数量按套餐限制（Free/Pro 10、Pro+ 50、Enterprise 200）。本插件会自动改用共享 Context（一个配置文件可登多个站）；要独立 Context 就升级套餐或删旧 Context |
 | 「Context 被占用」 | 登录窗口还开着：点「取消」，或等 30 分钟窗口过期 |
 | 扫码后验证仍说没登录 | 有些站点扫码后还要在手机上点确认；再等几秒重试验证 |
 | 登录态过期 | 重新「连接」扫码即可（工具会明确提示，不会编造内容） |

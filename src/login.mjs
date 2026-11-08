@@ -8,6 +8,7 @@ import path from 'node:path'
 import { DATA_DIR } from './host.mjs'
 import { browserJson, openUrl, evalText, sessionGet, waitContextUnlocked } from './plugin/lib/lexmount.mjs'
 import { resolveSite, ctxIdOf, setCtxId, recordStatus } from './registry.mjs'
+import { sharedContextId, setSharedContext, pickSharedContext } from './contexts.mjs'
 
 const PENDING_FILE = path.join(DATA_DIR, 'pending.json')
 const SHOT_DIR = path.join(DATA_DIR, 'shots')
@@ -45,11 +46,34 @@ export function judgeLogin(key, text) {
 async function ensureContext(def) {
   const existing = ctxIdOf(def.key)
   if (existing) return existing
-  const created = await browserJson(['context', 'create', '--description', `lexmount-patrol ${def.name} 登录`])
-    .catch((e) => { throw new Error('创建 Context 失败（项目 Context 可能已满 10 个）：' + String(e.message || e)) })
-  const ctxId = created.context_id
-  setCtxId(def.key, ctxId)
-  return ctxId
+  // 配置了共享 Context 就直接用（Context 数量受套餐限制，共享态可以容纳多个站点的登录）
+  const shared = sharedContextId()
+  if (shared) {
+    setCtxId(def.key, shared)
+    recordStatus(def.key, false, '使用共享 Context')
+    return shared
+  }
+  try {
+    const created = await browserJson(['context', 'create', '--description', `lexmount-patrol ${def.name} 登录`])
+    const ctxId = created.context_id
+    setCtxId(def.key, ctxId)
+    return ctxId
+  } catch (e) {
+    const msg = String(e.message || e)
+    if (/limit|429|max\s*10|reached/i.test(msg)) {
+      // 达到套餐上限：自动退回共享 Context（同一个浏览器配置文件可以同时登录多个站点）
+      const fallback = await pickSharedContext()
+      if (fallback) {
+        setCtxId(def.key, fallback)
+        setSharedContext(fallback)
+        recordStatus(def.key, false, '使用共享 Context')
+        console.error(`[warn] Context 已达上限（${msg.slice(0, 100)}），${def.name} 自动改用共享 Context ${fallback}`)
+        return fallback
+      }
+      throw new Error('Lexmount Context 已达上限（10/10），且没有可复用的 Context。升级套餐（Pro+ 最多 50 个）或在控制台删除不用的 Context。')
+    }
+    throw new Error('创建 Context 失败：' + msg.slice(0, 160))
+  }
 }
 
 /** 开始登录：返回 { ok, key, name, inspectUrl, shotApi, shotPath, pending:true } */

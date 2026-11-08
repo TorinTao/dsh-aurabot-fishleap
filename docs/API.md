@@ -16,6 +16,8 @@
 | GET | `/api/health` | 服务状态、版本、是否开鉴权 |
 | GET | `/api/usage` | 各站点今日用量 / 登录 Context 摘要 |
 | GET | `/api/sites` | 站点列表（内置 + 自定义 + 登录状态 + 待登录会话） |
+| GET | `/api/contexts` | Lexmount Context 列表 + 当前共享 Context |
+| POST | `/api/settings/shared` | 指定共享 Context：`{ "contextId": "..." }` |
 | POST | `/api/sites` | 添加自定义网站 |
 | DELETE | `/api/sites/:key` | 删除自定义网站 |
 | POST | `/api/sites/:key/connect` | **开始人工验证**：建 Context、开登录窗口、截图二维码 |
@@ -78,6 +80,14 @@ curl -X POST http://127.0.0.1:4571/api/tool \
 ```
 
 PowerShell 里可以用 `Invoke-RestMethod`，或者先用 `node` 起个测试脚本（中文参数建议走 UTF-8 字节）。
+
+## Context 数量不够时
+
+Lexmount 的 Context 数量是**按套餐**限制的（Free/Pro 10 个、Pro+ 50 个、Enterprise 200 个）。达到上限时本插件会自动把新站点指到**共享 Context**（同一个浏览器配置文件可以同时登录多个站点，Cookie 按域名共存）：
+
+- 自动：创建 Context 报 `Context limit reached` 时，自动复用**本插件已有站点的 Context**（优先未锁的），并记进 `sharedContextId`；
+- 手动：`POST /api/settings/shared {"contextId":"..."}` 指定一个专门的共享 Context；
+- 想用真正的独立 Context（每个站一个），需要升级套餐或在 Lexmount 控制台删除旧 Context。
 
 ## Aurobot 桥接模块
 
