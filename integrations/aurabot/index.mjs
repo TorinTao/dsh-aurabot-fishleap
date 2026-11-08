@@ -1,9 +1,9 @@
 // Aurobot 侧桥接模块：让小肥鱼能管理 Lexmount 插件里的网站（增删/登录/读取）
-// 依赖：lexmount-patrol 本地服务在跑（默认 http://127.0.0.1:4571）
-// 安装：在 lexmount-patrol 仓库执行 node scripts/install-aurabot-module.mjs
+// 依赖：feiyu-patrol 本地服务在跑（默认 http://127.0.0.1:4571）
+// 安装：在 feiyu-patrol 仓库执行 node scripts/install-aurabot-module.mjs
 export default {
   id: 'lexmount-site',
-  name: 'Lexmount 逛平台·站点管家',
+  name: '肥鱼逛网·站点管家',
   version: '1.0.0',
   api: 1,
   description: '让小肥鱼自动添加/删除网站，需要登录时把二维码发给主人扫码（human-in-the-loop），验证后就能读这个站',

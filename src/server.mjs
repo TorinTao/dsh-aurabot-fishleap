@@ -88,7 +88,7 @@ async function main() {
       }
 
       if (req.method === 'GET' && p === '/api/health') {
-        return json(res, 200, { ok: true, name: 'lexmount-patrol', version: '0.2.0', uptimeSec: Math.round((Date.now() - STARTED) / 1000), authRequired: Boolean(TOKEN) })
+        return json(res, 200, { ok: true, name: 'feiyu-patrol', version: '0.2.0', uptimeSec: Math.round((Date.now() - STARTED) / 1000), authRequired: Boolean(TOKEN) })
       }
       if (req.method === 'GET' && p === '/api/usage') {
         const r = await callTool('lx_status', {})
@@ -178,7 +178,7 @@ async function main() {
   })
 
   server.listen(PORT, '127.0.0.1', () => {
-    console.log(`lexmount-patrol 服务已启动：http://127.0.0.1:${PORT}`)
+    console.log(`feiyu-patrol 服务已启动：http://127.0.0.1:${PORT}`)
     console.log(`  面板: http://127.0.0.1:${PORT}/   报告: /report`)
     if (TOKEN) console.log('  已启用 token 鉴权（x-lexmount-token / ?token=）')
   })

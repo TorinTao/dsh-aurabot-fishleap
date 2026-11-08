@@ -23,11 +23,11 @@ export function saveSettings(patch) {
 export async function createApp() {
   const state = { tools: [], rules: [], commands: [], routes: new Map() }
   const api = {
-    id: 'lexmount-patrol',
+    id: 'feiyu-patrol',
     source: 'standalone',
     version: '0.1.0',
     apiVersion: 1,
-    name: 'Lexmount 巡检',
+    name: '肥鱼巡网',
     description: '基于 Lexmount 云浏览器的多平台只读巡检',
     log: {
       info: (...a) => console.error('[info]', ...a),

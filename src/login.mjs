@@ -54,7 +54,7 @@ async function ensureContext(def) {
     return shared
   }
   try {
-    const created = await browserJson(['context', 'create', '--description', `lexmount-patrol ${def.name} 登录`])
+    const created = await browserJson(['context', 'create', '--description', `feiyu-patrol ${def.name} 登录`])
     const ctxId = created.context_id
     setCtxId(def.key, ctxId)
     return ctxId
@@ -102,7 +102,7 @@ export async function startLogin(site) {
   await waitContextUnlocked(ctxId, { timeoutMs: 25_000 })
   let sess
   try {
-    sess = await browserJson(['session', 'create', '--context-id', ctxId, '--context-mode', 'read_write', '--context-description', `lexmount-patrol ${def.name} 登录`, '--timeout-seconds', '1800'])
+    sess = await browserJson(['session', 'create', '--context-id', ctxId, '--context-mode', 'read_write', '--context-description', `feiyu-patrol ${def.name} 登录`, '--timeout-seconds', '1800'])
   } catch (e) {
     throw new Error(`${def.name}的登录 Context 被占用（上一个窗口可能还没关）。先点「取消」再试。原始错误：${String(e.message || e).slice(0, 120)}`)
   }

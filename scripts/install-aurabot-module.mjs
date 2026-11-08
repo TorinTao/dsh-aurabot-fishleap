@@ -42,8 +42,8 @@ function main() {
   fs.mkdirSync(target, { recursive: true })
   fs.copyFileSync(path.join(SRC, 'index.mjs'), path.join(target, 'index.mjs'))
   console.log(`已安装 Aurobot 桥接模块：${target}`)
-  console.log('Aurobot 会在 3 秒内自动热加载；面板「平台 → Lexmount 逛平台·站点管家」可看到设置项。')
-  console.log('注意：需要先启动 lexmount-patrol 服务（node src/cli.mjs serve），否则小肥鱼调用会提示连不上。')
+  console.log('Aurobot 会在 3 秒内自动热加载；面板「平台 → 肥鱼逛网·站点管家」可看到设置项。')
+  console.log('注意：需要先启动 feiyu-patrol 服务（node src/cli.mjs serve），否则小肥鱼调用会提示连不上。')
 }
 
 main()
