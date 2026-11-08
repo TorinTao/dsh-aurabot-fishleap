@@ -91,6 +91,14 @@ HTTP API 见 [docs/API.md](docs/API.md)；同机部署 Aurobot 见 [docs/DEPLOY.
 
 输出在 `out/<时间戳>/`，同时覆盖 `out/latest/`。
 
+## 自测（端到端）
+
+```bash
+node scripts/e2e-selftest.mjs
+```
+
+会让「小肥鱼」（Aurobot 桥接模块）依次执行：列出站点 → 添加一个自定义站 → 打开登录窗口拿二维码 → 取消 → 读取这个站 → 读取已有站 → 确认重复添加被拒 → 确认内置站不能删 → 删除自定义站 → 列表复原。用于验证「自己增删网站 + 消费内容」整条链路。
+
 ## 目录
 
 ```
