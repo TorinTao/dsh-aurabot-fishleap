@@ -8,195 +8,230 @@
 <style>
   :root {
     color-scheme: light dark;
-    --bg: #f7fafc;
-    --fg: #10212b;
-    --muted: #5b707d;
+    --bg: #f5faff;
+    --bg2: #eaf4ff;
+    --fg: #0b2033;
+    --muted: #5a7286;
     --card: #ffffff;
-    --line: #e2ecf2;
-    --teal: #0ea5a4;
-    --teal-dark: #0b7f7e;
-    --blue: #2563eb;
-    --amber: #f59e0b;
-    --shadow: 0 10px 30px rgba(16, 33, 43, .08);
-    --radius: 18px;
+    --line: #d9e8f6;
+    --accent: #2f7cf6;
+    --accent-2: #38bdf8;
+    --soft: #eaf4ff;
+    --shadow: 0 14px 34px rgba(19, 43, 77, .10);
+    --radius: 20px;
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #0b141a;
-      --fg: #e8f1f5;
-      --muted: #94a9b5;
-      --card: #101d25;
-      --line: #1e303b;
-      --teal: #2dd4bf;
-      --teal-dark: #5eead4;
-      --blue: #7aa2ff;
-      --amber: #fbbf24;
-      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+      --bg: #060f1c;
+      --bg2: #0a1830;
+      --fg: #e7f2ff;
+      --muted: #93a9bd;
+      --card: #0c1a2c;
+      --line: #1c3550;
+      --accent: #7cb0ff;
+      --accent-2: #67e8f9;
+      --soft: #0e2038;
+      --shadow: 0 14px 34px rgba(0, 0, 0, .40);
     }
   }
   * { box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
     margin: 0;
-    background: var(--bg);
     color: var(--fg);
-    font: 16px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    font: 16px/1.78 -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
     -webkit-font-smoothing: antialiased;
+    background:
+      radial-gradient(900px 420px at 78% -6%, color-mix(in srgb, var(--accent-2) 16%, transparent), transparent 65%),
+      radial-gradient(700px 420px at 6% 12%, color-mix(in srgb, var(--accent) 12%, transparent), transparent 60%),
+      linear-gradient(180deg, var(--bg) 0%, var(--bg) 55%, color-mix(in srgb, var(--bg2) 65%, var(--bg)) 100%);
+    background-attachment: fixed;
   }
-  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 22px; }
+
   nav {
-    position: sticky; top: 0; z-index: 10;
-    backdrop-filter: blur(12px);
-    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    position: sticky; top: 0; z-index: 20;
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
     border-bottom: 1px solid var(--line);
   }
-  nav .inner { max-width: 1080px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 18px; }
-  .brand { font-weight: 800; font-size: 18px; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
-  .brand .fish { font-size: 22px; }
-  nav .links { margin-left: auto; display: flex; gap: 16px; flex-wrap: wrap; }
+  nav .inner { max-width: 1100px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 20px; }
+  .brand { font-weight: 800; font-size: 18px; display: flex; align-items: center; gap: 9px; letter-spacing: .4px; }
+  .brand .badge-dot { width: 22px; height: 22px; border-radius: 7px; display: inline-flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent)); color: #fff; font-size: 12px; font-weight: 800; }
+  nav .links { margin-left: auto; display: flex; gap: 18px; flex-wrap: wrap; }
   nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
-  nav a:hover { color: var(--teal); }
+  nav a:hover { color: var(--accent); }
 
-  header.hero { position: relative; overflow: hidden; padding: 64px 0 40px; }
-  header.hero::before {
-    content: "";
-    position: absolute; inset: -40% -20% auto -20%; height: 120%;
-    background:
-      radial-gradient(600px 300px at 20% 10%, color-mix(in srgb, var(--teal) 18%, transparent), transparent 60%),
-      radial-gradient(500px 260px at 85% 30%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 60%);
-    pointer-events: none;
-  }
-  .hero-grid { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 36px; align-items: center; }
+  header.hero { padding: 66px 0 26px; }
+  .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 46px; align-items: center; }
   .kicker {
-    display: inline-flex; align-items: center; gap: 8px;
-    font-size: 13px; color: var(--teal-dark);
-    border: 1px solid color-mix(in srgb, var(--teal) 40%, var(--line));
-    background: color-mix(in srgb, var(--teal) 8%, var(--card));
-    padding: 4px 12px; border-radius: 999px;
+    display: inline-flex; align-items: center; gap: 8px; font-size: 13px;
+    color: color-mix(in srgb, var(--accent) 82%, var(--fg));
+    border: 1px solid color-mix(in srgb, var(--accent) 32%, var(--line));
+    background: color-mix(in srgb, var(--accent) 8%, var(--card));
+    padding: 5px 13px; border-radius: 999px;
   }
-  h1 { font-size: 46px; line-height: 1.15; margin: 18px 0 12px; letter-spacing: -0.5px; }
+  .kicker::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  h1 { font-size: 48px; line-height: 1.16; margin: 20px 0 14px; letter-spacing: -1px; font-weight: 850; }
   h1 .accent {
-    background: linear-gradient(120deg, var(--teal), var(--blue));
+    background: linear-gradient(115deg, var(--accent-2) 0%, var(--accent) 55%, color-mix(in srgb, var(--accent) 70%, #7c3aed) 100%);
     -webkit-background-clip: text; background-clip: text; color: transparent;
   }
-  .lead { font-size: 19px; color: var(--muted); max-width: 30em; }
-  .cta { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .lead { font-size: 18.5px; color: var(--muted); max-width: 30em; margin: 0; }
+  .lead b { color: var(--fg); font-weight: 650; }
+  .cta { display: flex; gap: 12px; margin-top: 28px; flex-wrap: wrap; }
   .btn {
-    display: inline-flex; align-items: center; gap: 8px;
-    padding: 11px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 15px;
-    border: 1px solid var(--line); color: var(--fg); background: var(--card);
-    transition: transform .15s ease, box-shadow .15s ease;
+    display: inline-flex; align-items: center; gap: 8px; padding: 12px 22px; border-radius: 13px;
+    text-decoration: none; font-weight: 650; font-size: 15px; border: 1px solid var(--line);
+    color: var(--fg); background: var(--card); transition: transform .16s ease, box-shadow .16s ease;
   }
-  .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
-  .btn.primary { background: linear-gradient(120deg, var(--teal), var(--blue)); color: #fff; border: none; }
-  .hero-art { display: flex; justify-content: center; }
-  .hero-art svg { width: 100%; max-width: 360px; height: auto; filter: drop-shadow(0 20px 30px rgba(14, 165, 164, .18)); }
+  .btn:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+  .btn.primary {
+    background: linear-gradient(120deg, var(--accent-2), var(--accent));
+    color: #fff; border: none; box-shadow: 0 10px 24px color-mix(in srgb, var(--accent) 32%, transparent);
+  }
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 20px; }
+  .pill { font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: color-mix(in srgb, var(--card) 88%, transparent); padding: 4px 12px; border-radius: 999px; }
 
-  section { padding: 34px 0; }
-  .section-head { margin-bottom: 22px; }
-  .section-head h2 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.3px; }
+  .hero-art { position: relative; display: flex; justify-content: center; }
+  .photo-card {
+    position: relative; width: min(100%, 430px); border-radius: 26px;
+    background: #fff; padding: 10px; border: 1px solid var(--line);
+    box-shadow: 0 24px 50px rgba(19, 43, 77, .18);
+    transform: rotate(-1.6deg);
+    transition: transform .25s ease;
+    margin: 0;
+  }
+  .photo-card:hover { transform: rotate(0deg) translateY(-3px); }
+  .photo-card img { display: block; width: 100%; height: auto; border-radius: 18px; }
+  .photo-card figcaption {
+    position: absolute; left: 18px; bottom: -14px;
+    background: linear-gradient(120deg, var(--accent-2), var(--accent));
+    color: #fff; font-size: 13px; font-weight: 700; padding: 5px 14px; border-radius: 999px;
+    box-shadow: 0 8px 18px color-mix(in srgb, var(--accent) 38%, transparent);
+  }
+  .chip {
+    position: absolute; font-size: 12.5px; font-weight: 650; color: var(--fg);
+    background: var(--card); border: 1px solid var(--line); border-radius: 999px;
+    padding: 6px 13px; box-shadow: var(--shadow);
+  }
+  .chip.c1 { top: -16px; right: 6px; }
+  .chip.c2 { left: -20px; top: 46%; }
+
+  section { padding: 42px 0 6px; }
+  .section-head { margin-bottom: 24px; }
+  .eyebrow { font-size: 12.5px; letter-spacing: 1.2px; color: var(--accent); font-weight: 700; text-transform: uppercase; }
+  .section-head h2 { font-size: 28px; margin: 6px 0 8px; letter-spacing: -.5px; }
   .section-head p { margin: 0; color: var(--muted); }
 
   .grid { display: grid; gap: 16px; }
   .grid.three { grid-template-columns: repeat(3, 1fr); }
   .grid.two { grid-template-columns: repeat(2, 1fr); }
   .card {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 20px 22px; box-shadow: var(--shadow);
+    background: color-mix(in srgb, var(--card) 94%, transparent);
+    border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 22px; box-shadow: var(--shadow);
+    transition: transform .18s ease;
   }
+  .card:hover { transform: translateY(-3px); }
   .card h3 { margin: 0 0 6px; font-size: 17px; }
   .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
   .card .icon {
-    width: 38px; height: 38px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center;
-    font-size: 19px; margin-bottom: 10px;
-    background: color-mix(in srgb, var(--teal) 12%, var(--card));
-    border: 1px solid color-mix(in srgb, var(--teal) 30%, var(--line));
+    width: 40px; height: 40px; border-radius: 12px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 20px; margin-bottom: 12px;
+    background: color-mix(in srgb, var(--accent) 10%, var(--card));
+    border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
   }
 
   .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
   .step {
-    position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 18px 18px 16px; box-shadow: var(--shadow);
+    position: relative; background: color-mix(in srgb, var(--card) 94%, transparent);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 20px 18px 18px; box-shadow: var(--shadow);
   }
   .step .num {
-    width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
-    font-weight: 800; font-size: 14px; color: #fff;
-    background: linear-gradient(135deg, var(--teal), var(--blue)); margin-bottom: 10px;
+    width: 30px; height: 30px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; color: #fff; margin-bottom: 12px;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    box-shadow: 0 6px 14px color-mix(in srgb, var(--accent) 30%, transparent);
   }
-  .step h3 { margin: 0 0 4px; font-size: 16px; }
-  .step p { margin: 0; color: var(--muted); font-size: 13.5px; }
+  .step h3 { margin: 0 0 5px; font-size: 16px; }
+  .step p { margin: 0; color: var(--muted); font-size: 13.8px; }
 
-  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
   .split .card h3 { display: flex; align-items: center; gap: 8px; }
-  .tag { font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-weight: 500; }
-  ul.clean { margin: 12px 0 0; padding: 0; list-style: none; }
-  ul.clean li { position: relative; padding-left: 22px; margin: 7px 0; color: var(--muted); font-size: 14.5px; }
-  ul.clean li::before { content: "🐟"; position: absolute; left: 0; font-size: 13px; top: 2px; }
+  ul.clean { margin: 14px 0 0; padding: 0; list-style: none; }
+  ul.clean li { position: relative; padding-left: 24px; margin: 8px 0; color: var(--muted); font-size: 14.5px; }
+  ul.clean li::before { content: "◦"; position: absolute; left: 6px; top: -1px; color: var(--accent); font-weight: 800; }
 
   .sites { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
   .site {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 16px;
-    box-shadow: var(--shadow);
+    position: relative; background: color-mix(in srgb, var(--card) 94%, transparent);
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 20px; box-shadow: var(--shadow);
   }
   .site .name { font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-  .site .name span:last-child { font-size: 12px; color: var(--teal-dark); font-weight: 500; }
+  .site .name .tag { font-size: 11.5px; font-weight: 600; color: color-mix(in srgb, var(--accent) 80%, var(--fg)); background: color-mix(in srgb, var(--accent) 10%, var(--card)); border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line)); padding: 2px 9px; border-radius: 999px; }
   .site .sample {
-    margin-top: 10px; font-size: 13.5px; color: var(--muted);
-    border-left: 3px solid color-mix(in srgb, var(--teal) 55%, var(--line));
-    padding-left: 10px; line-height: 1.55;
+    margin-top: 12px; font-size: 13.6px; color: var(--muted); line-height: 1.6;
+    border-left: 3px solid color-mix(in srgb, var(--accent) 45%, var(--line)); padding-left: 11px;
     display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
   }
-  .site .stats { margin-top: 10px; font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+  .site .stats { margin-top: 12px; font-size: 12px; color: var(--muted); display: flex; gap: 14px; }
+  .site .stats b { color: var(--fg); font-weight: 650; }
 
   .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
   .metric {
-    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
-    padding: 20px 18px; box-shadow: var(--shadow); text-align: left;
+    background: color-mix(in srgb, var(--card) 94%, transparent); border: 1px solid var(--line);
+    border-radius: var(--radius); padding: 22px 20px; box-shadow: var(--shadow);
   }
-  .metric .big { font-size: 34px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
-  .metric .big .unit { font-size: 15px; font-weight: 600; color: var(--muted); margin-left: 2px; }
-  .metric .label { margin-top: 6px; color: var(--muted); font-size: 13.5px; }
+  .metric .big {
+    font-size: 36px; font-weight: 850; letter-spacing: -1.4px; line-height: 1.05;
+    background: linear-gradient(120deg, var(--accent-2), var(--accent));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .metric .big .unit { font-size: 15px; font-weight: 700; color: var(--muted); margin-left: 3px; -webkit-text-fill-color: var(--muted); }
+  .metric .label { margin-top: 8px; color: var(--muted); font-size: 13.5px; }
 
   .quote {
-    background: linear-gradient(120deg, color-mix(in srgb, var(--teal) 10%, var(--card)), color-mix(in srgb, var(--blue) 8%, var(--card)));
-    border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow);
-    font-size: 15.5px; color: var(--fg);
+    background:
+      linear-gradient(120deg, color-mix(in srgb, var(--accent) 9%, var(--card)), color-mix(in srgb, var(--accent-2) 8%, var(--card)));
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 24px 26px; box-shadow: var(--shadow);
+    font-size: 15.5px;
   }
-  .quote b { color: var(--teal-dark); }
-  .quote .small { color: var(--muted); font-size: 13.5px; margin-top: 8px; }
+  .quote b { color: color-mix(in srgb, var(--accent) 72%, var(--fg)); }
+  .quote .small { color: var(--muted); font-size: 13.5px; margin-top: 10px; }
 
   pre {
-    background: color-mix(in srgb, var(--fg) 92%, #000);
-    color: #d7f5f3; border-radius: 14px; padding: 18px 20px; overflow: auto;
-    font-size: 13.5px; line-height: 1.7; border: 1px solid var(--line);
+    background: #0b2033; color: #d8ecff; border-radius: 16px; padding: 20px 22px; overflow: auto;
+    font-size: 13.5px; line-height: 1.75; border: 1px solid color-mix(in srgb, var(--accent) 20%, #0b2033);
+    box-shadow: var(--shadow);
   }
   code { font-family: "Cascadia Code", "JetBrains Mono", Consolas, monospace; }
-  pre .c { color: #7fa7b5; }
+  pre .c { color: #7fa3c7; }
   .inline-code {
-    background: color-mix(in srgb, var(--fg) 8%, transparent);
-    border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px;
-    font-family: "Cascadia Code", Consolas, monospace; font-size: 13px;
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+    border-radius: 7px; padding: 1px 7px; font-family: "Cascadia Code", Consolas, monospace; font-size: 13px;
   }
+  a { color: color-mix(in srgb, var(--accent) 84%, var(--fg)); }
 
-  footer { border-top: 1px solid var(--line); margin-top: 30px; padding: 28px 0 44px; color: var(--muted); font-size: 13.5px; }
-  footer .row { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
-  footer a { color: var(--teal); text-decoration: none; }
+  footer { margin-top: 46px; border-top: 1px solid var(--line); padding: 30px 0 52px; color: var(--muted); font-size: 13.5px; }
+  footer .row { display: flex; gap: 16px; flex-wrap: wrap; align-items: center; }
+  .note { font-size: 12.8px; color: var(--muted); margin-top: 12px; }
 
-  .note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
-  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
-  .pill { font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: var(--card); padding: 3px 11px; border-radius: 999px; }
-
-  @media (max-width: 900px) {
-    .hero-grid { grid-template-columns: 1fr; }
-    .hero-art { order: -1; max-height: 220px; }
+  @media (max-width: 920px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 30px; }
+    .hero-art { order: -1; }
+    .photo-card { width: min(100%, 360px); }
     .grid.three, .sites, .metrics { grid-template-columns: repeat(2, 1fr); }
     .steps { grid-template-columns: repeat(2, 1fr); }
-    h1 { font-size: 36px; }
+    h1 { font-size: 38px; }
   }
-  @media (max-width: 560px) {
+  @media (max-width: 580px) {
     .grid.three, .sites, .metrics, .steps, .split, .grid.two { grid-template-columns: 1fr; }
-    h1 { font-size: 30px; }
+    h1 { font-size: 31px; }
     nav .links { display: none; }
+    .chip { display: none; }
   }
 </style>
 </head>
@@ -204,7 +239,7 @@
 
 <nav>
   <div class="inner">
-    <div class="brand"><span class="fish">🐟</span> 鱼跃</div>
+    <div class="brand"><span class="badge-dot">鱼</span> 鱼跃</div>
     <div class="links">
       <a href="#why">为什么做</a>
       <a href="#how">怎么玩</a>
@@ -237,33 +272,13 @@
         <span class="pill">开源 · MIT</span>
       </div>
     </div>
-    <div class="hero-art" aria-hidden="true">
-      <svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#2dd4bf"/>
-            <stop offset="1" stop-color="#2563eb"/>
-          </linearGradient>
-          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
-            <stop offset="0" stop-color="#99f6e4"/>
-            <stop offset="1" stop-color="#bfdbfe"/>
-          </linearGradient>
-        </defs>
-        <ellipse cx="180" cy="248" rx="120" ry="16" fill="url(#g1)" opacity=".14"/>
-        <g transform="translate(30 20)">
-          <path d="M250 118c0 44-38 78-92 78-34 0-62-12-84-32l-34 30c-6 5-14 1-13-7l7-49c-2-7-3-13-3-20 0-44 38-78 92-78 30 0 54 9 74 26l33-29c6-5 14-1 13 7l-6 40c8 12 13 22 13 34z" fill="url(#g1)"/>
-          <ellipse cx="92" cy="104" rx="60" ry="44" fill="#fff" opacity=".18"/>
-          <circle cx="150" cy="104" r="11" fill="#0b141a"/>
-          <circle cx="153" cy="100" r="4" fill="#fff"/>
-          <path d="M190 132c10 6 22 8 34 6" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".65"/>
-          <g opacity=".9">
-            <circle cx="262" cy="58" r="9" fill="none" stroke="#2dd4bf" stroke-width="3"/>
-            <circle cx="292" cy="34" r="6" fill="none" stroke="#60a5fa" stroke-width="3"/>
-            <circle cx="308" cy="64" r="5" fill="none" stroke="#2dd4bf" stroke-width="3"/>
-          </g>
-          <path d="M30 200c22 10 44 10 66 0s44-10 66 0 44 10 66 0" stroke="url(#g2)" stroke-width="6" fill="none" stroke-linecap="round"/>
-        </g>
-      </svg>
+    <div class="hero-art">
+      <figure class="photo-card">
+        <img src="assets/hero.webp" alt="大肥鱼本鱼" width="760" height="580">
+        <figcaption>大肥鱼 · 本鱼出镜</figcaption>
+      </figure>
+      <span class="chip c1">🐟 会自己逛</span>
+      <span class="chip c2">🙋 只帮扫码</span>
     </div>
   </div>
 </header>
@@ -272,6 +287,7 @@
 
   <section id="why">
     <div class="section-head">
+      <div class="eyebrow">Why</div>
       <h2>为什么做这个</h2>
       <p>不是给她找工作，是给她找点乐子。</p>
     </div>
@@ -296,6 +312,7 @@
 
   <section id="how">
     <div class="section-head">
+      <div class="eyebrow">How</div>
       <h2>她怎么逛的</h2>
       <p>一次扫码，换她随时上网的自由。</p>
     </div>
@@ -303,7 +320,7 @@
       <div class="step">
         <div class="num">1</div>
         <h3>主人帮她开个头</h3>
-        <p>她说「想逛小红书」时，插件自动打开一个云端浏览器登录窗口，截下二维码，发到 QQ 给她主人。</p>
+        <p>她说「想逛小红书」时，插件自动打开云端浏览器登录窗口，截下二维码，发到 QQ 给主人。</p>
       </div>
       <div class="step">
         <div class="num">2</div>
@@ -322,7 +339,7 @@
       </div>
     </div>
 
-    <div class="split" style="margin-top:16px">
+    <div class="split">
       <div class="card">
         <h3>☁️ Lexmount 云平台做什么</h3>
         <ul class="clean">
@@ -337,7 +354,7 @@
         <ul class="clean">
           <li>第一次每个网站用手机扫一次码（她不碰密码）</li>
           <li>登录过期时补扫一次</li>
-          <li>偶尔在 QQ/面板里点一下「验证」确认</li>
+          <li>偶尔在 QQ / 面板里点一下「验证」确认</li>
         </ul>
       </div>
     </div>
@@ -345,45 +362,47 @@
 
   <section id="what">
     <div class="section-head">
+      <div class="eyebrow">Places</div>
       <h2>她能逛什么</h2>
       <p>一次逛 6 个地方，把「今天有什么好玩的」带回来。（下面是这次真实逛到的内容节选）</p>
     </div>
     <div class="sites">
       <div class="site">
-        <div class="name"><span>微博热搜</span><span>不用登录</span></div>
+        <div class="name"><span>微博热搜</span><span class="tag">不登录</span></div>
         <div class="sample">习近平同加蓬总统会谈 · TheShy 希望 Chovy 夺冠 · 多地中小学延迟到校取消早读……</div>
-        <div class="stats"><span>1407 字</span><span>4.8 秒</span></div>
+        <div class="stats"><span><b>1407</b> 字</span><span><b>4.8</b> 秒</span></div>
       </div>
       <div class="site">
-        <div class="name"><span>知乎热榜</span><span>要登录</span></div>
+        <div class="name"><span>知乎热榜</span><span class="tag">要登录</span></div>
         <div class="sample">S16 半决赛 GEN 3:0 淘汰 iG 晋级决赛 · 如何正确使用知乎？ · 辟谣专区……</div>
-        <div class="stats"><span>8007 字</span><span>10.2 秒</span></div>
+        <div class="stats"><span><b>8007</b> 字</span><span><b>10.2</b> 秒</span></div>
       </div>
       <div class="site">
-        <div class="name"><span>豆瓣电影口碑榜</span><span>要登录</span></div>
+        <div class="name"><span>豆瓣电影口碑榜</span><span class="tag">要登录</span></div>
         <div class="sample">肖申克的救赎 · 影讯与购票 · 2025 年度榜单 · 影评……</div>
-        <div class="stats"><span>2814 字</span><span>4.4 秒</span></div>
+        <div class="stats"><span><b>2814</b> 字</span><span><b>4.4</b> 秒</span></div>
       </div>
       <div class="site">
-        <div class="name"><span>今日头条</span><span>要登录</span></div>
+        <div class="name"><span>今日头条</span><span class="tag">要登录</span></div>
         <div class="sample">微软 AI 算力租赁收缩 · DeepSeek：中断问题已修复 · 林昀儒 4:0 温瑞博……</div>
-        <div class="stats"><span>2592 字</span><span>6.6 秒</span></div>
+        <div class="stats"><span><b>2592</b> 字</span><span><b>6.6</b> 秒</span></div>
       </div>
       <div class="site">
-        <div class="name"><span>小红书笔记</span><span>要登录</span></div>
+        <div class="name"><span>小红书笔记</span><span class="tag">要登录</span></div>
         <div class="sample">不愧是最尊重镜头的人 · 无畏契约在成都的福利局 · 兔娘 · 成都欢乐谷惊奇潮玩节……</div>
-        <div class="stats"><span>573 字</span><span>8.3 秒</span></div>
+        <div class="stats"><span><b>573</b> 字</span><span><b>8.3</b> 秒</span></div>
       </div>
       <div class="site">
-        <div class="name"><span>网易云热歌榜</span><span>要登录</span></div>
+        <div class="name"><span>网易云热歌榜</span><span class="tag">要登录</span></div>
         <div class="sample">热歌榜更新 22 首 · 飙升榜 · 新歌榜 · 原创榜 · 网易云中文说唱榜……</div>
-        <div class="stats"><span>8007 字</span><span>5.0 秒</span></div>
+        <div class="stats"><span><b>8007</b> 字</span><span><b>5.0</b> 秒</span></div>
       </div>
     </div>
   </section>
 
   <section id="result">
     <div class="section-head">
+      <div class="eyebrow">Benchmark</div>
       <h2>实测数据</h2>
       <p>2026-11-08 一次真实运行的结果。</p>
     </div>
@@ -391,7 +410,7 @@
       <div class="metric"><div class="big">6<span class="unit">/6</span></div><div class="label">网站全部逛成功</div></div>
       <div class="metric"><div class="big">~40<span class="unit">秒</span></div><div class="label">一轮逛完（含登录态复用）</div></div>
       <div class="metric"><div class="big">3<span class="unit">/3</span></div><div class="label">对照实验：普通抓取全失败，云浏览器全成功</div></div>
-      <div class="metric"><div class="big">7<span class="unit">个工具</span></div><div class="label">小肥鱼可以自己加站/删站/开登录/读内容</div></div>
+      <div class="metric"><div class="big">7<span class="unit">个工具</span></div><div class="label">小肥鱼可以自己加站 / 删站 / 开登录 / 读内容</div></div>
     </div>
 
     <div class="quote" style="margin-top:16px">
@@ -405,6 +424,7 @@
 
   <section id="run">
     <div class="section-head">
+      <div class="eyebrow">Run it</div>
       <h2>想自己跑一遍？</h2>
       <p>一台装了 Node 的电脑 + 一个 Lexmount 账号就行。</p>
     </div>
@@ -431,6 +451,7 @@ node scripts/install-aurabot-module.mjs
 
   <section id="limit">
     <div class="section-head">
+      <div class="eyebrow">Honest</div>
       <h2>说点实话</h2>
       <p>目前还做不到、或者故意不做的部分。</p>
     </div>
@@ -439,7 +460,7 @@ node scripts/install-aurabot-module.mjs
         <h3>已知限制</h3>
         <ul class="clean">
           <li>登录会过期（网易云约两天），需要主人补扫一次</li>
-          <li>免费/Pro 版最多 10 个登录配置，满了会自动复用已有的</li>
+          <li>免费 / Pro 版最多 10 个登录配置，满了会自动复用已有的</li>
           <li>贴吧卡过一次「锁定」（云平台侧），不影响别的网站</li>
           <li>单次内容默认截断 8000 字</li>
         </ul>
