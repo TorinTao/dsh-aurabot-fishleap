@@ -60,7 +60,7 @@ export async function runBrief({ outDir = OUT_DIR, targets = TARGETS } = {}) {
   const meta = {
     task: '多平台热点巡检简报',
     generatedAt: new Date().toISOString(),
-    tool: 'feiyu-patrol 0.1.0',
+    tool: 'dsh-aurabot-fishleap 0.1.0',
     runtime: `node ${process.version}`,
     root: ROOT_DIR,
     targets: targets.length,

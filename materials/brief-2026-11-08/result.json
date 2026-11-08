@@ -2,9 +2,9 @@
   "meta": {
     "task": "多平台热点巡检简报",
     "generatedAt": "2026-11-08T07:47:52.219Z",
-    "tool": "feiyu-patrol 0.1.0",
+    "tool": "dsh-aurabot-fishleap 0.1.0",
     "runtime": "node v24.20.0",
-    "root": "D:\\Harness\\dsh\\workspace\\feiyu-patrol",
+    "root": "D:\\Harness\\dsh\\workspace\\dsh-aurabot-fishleap",
     "targets": 6
   },
   "summary": {

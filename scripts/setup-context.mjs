@@ -35,14 +35,14 @@ async function main() {
 
   let ctxId = givenCtx || String(loadSettings()[site.ctxKey] || '')
   if (!ctxId) {
-    const created = await browserJson(['context', 'create', '--description', `feiyu-patrol ${site.name} 登录`], { bin })
+    const created = await browserJson(['context', 'create', '--description', `dsh-aurabot-fishleap ${site.name} 登录`], { bin })
     ctxId = created.context_id
     console.log(`新建 Context：${ctxId}`)
   } else {
     console.log(`复用 Context：${ctxId}`)
   }
 
-  const sess = await browserJson(['session', 'create', '--context-id', ctxId, '--context-mode', 'read_write', '--description', 'feiyu-patrol 登录窗口', '--timeout-seconds', '1800'], { bin })
+  const sess = await browserJson(['session', 'create', '--context-id', ctxId, '--context-mode', 'read_write', '--description', 'dsh-aurabot-fishleap 登录窗口', '--timeout-seconds', '1800'], { bin })
   console.log(`会话：${sess.session_id}`)
   await openUrl(sess.session_id, site.loginUrl, { bin })
   console.log(`\n请打开下面的链接，用手机扫码/完成登录（窗口 30 分钟内有效）：\n${sess.inspect_url}\n`)

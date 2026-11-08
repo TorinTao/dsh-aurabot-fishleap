@@ -1,9 +1,9 @@
 {
-  "name": "feiyu-patrol",
+  "name": "dsh-aurabot-fishleap",
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "基于 Lexmount 云浏览器的多平台巡检 / 网站管家：可增删网站、人工扫码验证、产出带来源的巡检简报（HTTP API + 本地面板 + Aurobot 桥接）",
+  "description": "鱼跃（dsh-aurabot-fishleap）：大肥鱼的小插件，基于 Lexmount 云浏览器的多平台巡检 / 网站管家，可增删网站、人工扫码验证、产出带来源的巡检简报（HTTP API + 本地面板 + Aurobot 桥接）",
   "scripts": {
     "brief": "node src/cli.mjs brief",
     "status": "node src/cli.mjs status",

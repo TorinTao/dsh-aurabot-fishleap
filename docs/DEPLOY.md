@@ -4,7 +4,7 @@
 
 ```text
 ① Aurobot（DSH 插件，QQ 机器人）
-② feiyu-patrol（本仓库，本机服务）
+② dsh-aurabot-fishleap（本仓库，本机服务）
 ③ Aurobot 桥接模块（把两者连起来）
 ```
 
@@ -15,8 +15,8 @@
 ## ② 装 Lexmount 插件
 
 ```bash
-git clone <仓库地址> feiyu-patrol
-cd feiyu-patrol
+git clone <仓库地址> dsh-aurabot-fishleap
+cd dsh-aurabot-fishleap
 node --version          # 需要 >= 22
 node src/cli.mjs status # 能跑起来就行（还没配 Context 会显示 ❌）
 ```
@@ -38,7 +38,7 @@ node scripts/install-aurabot-module.mjs
 
 会把 `integrations/aurabot/index.mjs` 复制到 Aurobot 的模块目录（`~/.dsh/plugins-data/aurabot/modules/lexmount-site/`），Aurobot 约 3 秒自动热加载。
 
-面板里会出现「平台 → 肥鱼逛网·站点管家」，可改服务地址（默认 `http://127.0.0.1:4571`）和可选 token。
+面板里会出现「平台 → 鱼跃·逛网管家」，可改服务地址（默认 `http://127.0.0.1:4571`）和可选 token。
 
 ## ④ 启动服务（随时可用）
 
@@ -53,7 +53,7 @@ node src/cli.mjs serve 4600     # 换端口
 
 **开机自启**（Windows）：
 
-1. 新建快捷方式，目标填 `node "C:\path\to\feiyu-patrol\src\cli.mjs" serve`；
+1. 新建快捷方式，目标填 `node "C:\path\to\dsh-aurabot-fishleap\src\cli.mjs" serve`；
 2. `Win+R` → `shell:startup`，把快捷方式丢进去；
 3. 或者用「任务计划程序」创建「登录时运行」的任务（更稳）；非管理员账号可能无法用 schtasks 命令行创建，用图形界面即可。
 

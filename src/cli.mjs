@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// feiyu-patrol CLI：把 Lexmount 云浏览器能力当成一个独立工具用
+// dsh-aurabot-fishleap CLI：把 Lexmount 云浏览器能力当成一个独立工具用
 // 用法：
 //   node src/cli.mjs tools            列出插件提供的工具
 //   node src/cli.mjs status           看登录 Context 与今日用量
@@ -14,7 +14,7 @@ const [cmd, ...rest] = process.argv.slice(2)
 
 async function main() {
   if (!cmd || cmd === 'help' || cmd === '-h') {
-    console.log(`feiyu-patrol · 基于 Lexmount 云浏览器的多平台巡检
+    console.log(`dsh-aurabot-fishleap · 基于 Lexmount 云浏览器的多平台巡检
 
 用法：
   node src/cli.mjs tools                          列出工具
