@@ -1,0 +1,476 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>鱼跃 · 给大肥鱼的上网小插件</title>
+<meta name="description" content="鱼跃（dsh-aurabot-fishleap）：给 AI 宠物「大肥鱼」的上网小插件。她自己逛网站看热闹，主人只帮扫一次码。基于 Lexmount 云浏览器。">
+<style>
+  :root {
+    color-scheme: light dark;
+    --bg: #f7fafc;
+    --fg: #10212b;
+    --muted: #5b707d;
+    --card: #ffffff;
+    --line: #e2ecf2;
+    --teal: #0ea5a4;
+    --teal-dark: #0b7f7e;
+    --blue: #2563eb;
+    --amber: #f59e0b;
+    --shadow: 0 10px 30px rgba(16, 33, 43, .08);
+    --radius: 18px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0b141a;
+      --fg: #e8f1f5;
+      --muted: #94a9b5;
+      --card: #101d25;
+      --line: #1e303b;
+      --teal: #2dd4bf;
+      --teal-dark: #5eead4;
+      --blue: #7aa2ff;
+      --amber: #fbbf24;
+      --shadow: 0 10px 30px rgba(0, 0, 0, .35);
+    }
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--fg);
+    font: 16px/1.75 -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 1080px; margin: 0 auto; padding: 0 22px; }
+  nav {
+    position: sticky; top: 0; z-index: 10;
+    backdrop-filter: blur(12px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    border-bottom: 1px solid var(--line);
+  }
+  nav .inner { max-width: 1080px; margin: 0 auto; padding: 12px 22px; display: flex; align-items: center; gap: 18px; }
+  .brand { font-weight: 800; font-size: 18px; letter-spacing: .5px; display: flex; align-items: center; gap: 8px; }
+  .brand .fish { font-size: 22px; }
+  nav .links { margin-left: auto; display: flex; gap: 16px; flex-wrap: wrap; }
+  nav a { color: var(--muted); text-decoration: none; font-size: 14px; }
+  nav a:hover { color: var(--teal); }
+
+  header.hero { position: relative; overflow: hidden; padding: 64px 0 40px; }
+  header.hero::before {
+    content: "";
+    position: absolute; inset: -40% -20% auto -20%; height: 120%;
+    background:
+      radial-gradient(600px 300px at 20% 10%, color-mix(in srgb, var(--teal) 18%, transparent), transparent 60%),
+      radial-gradient(500px 260px at 85% 30%, color-mix(in srgb, var(--blue) 14%, transparent), transparent 60%);
+    pointer-events: none;
+  }
+  .hero-grid { position: relative; display: grid; grid-template-columns: 1.15fr .85fr; gap: 36px; align-items: center; }
+  .kicker {
+    display: inline-flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--teal-dark);
+    border: 1px solid color-mix(in srgb, var(--teal) 40%, var(--line));
+    background: color-mix(in srgb, var(--teal) 8%, var(--card));
+    padding: 4px 12px; border-radius: 999px;
+  }
+  h1 { font-size: 46px; line-height: 1.15; margin: 18px 0 12px; letter-spacing: -0.5px; }
+  h1 .accent {
+    background: linear-gradient(120deg, var(--teal), var(--blue));
+    -webkit-background-clip: text; background-clip: text; color: transparent;
+  }
+  .lead { font-size: 19px; color: var(--muted); max-width: 30em; }
+  .cta { display: flex; gap: 12px; margin-top: 26px; flex-wrap: wrap; }
+  .btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 11px 20px; border-radius: 12px; text-decoration: none; font-weight: 600; font-size: 15px;
+    border: 1px solid var(--line); color: var(--fg); background: var(--card);
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: var(--shadow); }
+  .btn.primary { background: linear-gradient(120deg, var(--teal), var(--blue)); color: #fff; border: none; }
+  .hero-art { display: flex; justify-content: center; }
+  .hero-art svg { width: 100%; max-width: 360px; height: auto; filter: drop-shadow(0 20px 30px rgba(14, 165, 164, .18)); }
+
+  section { padding: 34px 0; }
+  .section-head { margin-bottom: 22px; }
+  .section-head h2 { font-size: 26px; margin: 0 0 6px; letter-spacing: -.3px; }
+  .section-head p { margin: 0; color: var(--muted); }
+
+  .grid { display: grid; gap: 16px; }
+  .grid.three { grid-template-columns: repeat(3, 1fr); }
+  .grid.two { grid-template-columns: repeat(2, 1fr); }
+  .card {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 22px; box-shadow: var(--shadow);
+  }
+  .card h3 { margin: 0 0 6px; font-size: 17px; }
+  .card p { margin: 0; color: var(--muted); font-size: 14.5px; }
+  .card .icon {
+    width: 38px; height: 38px; border-radius: 11px; display: inline-flex; align-items: center; justify-content: center;
+    font-size: 19px; margin-bottom: 10px;
+    background: color-mix(in srgb, var(--teal) 12%, var(--card));
+    border: 1px solid color-mix(in srgb, var(--teal) 30%, var(--line));
+  }
+
+  .steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .step {
+    position: relative; background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 18px 16px; box-shadow: var(--shadow);
+  }
+  .step .num {
+    width: 28px; height: 28px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 14px; color: #fff;
+    background: linear-gradient(135deg, var(--teal), var(--blue)); margin-bottom: 10px;
+  }
+  .step h3 { margin: 0 0 4px; font-size: 16px; }
+  .step p { margin: 0; color: var(--muted); font-size: 13.5px; }
+
+  .split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .split .card h3 { display: flex; align-items: center; gap: 8px; }
+  .tag { font-size: 12px; padding: 1px 9px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-weight: 500; }
+  ul.clean { margin: 12px 0 0; padding: 0; list-style: none; }
+  ul.clean li { position: relative; padding-left: 22px; margin: 7px 0; color: var(--muted); font-size: 14.5px; }
+  ul.clean li::before { content: "🐟"; position: absolute; left: 0; font-size: 13px; top: 2px; }
+
+  .sites { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .site {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 18px 16px;
+    box-shadow: var(--shadow);
+  }
+  .site .name { font-weight: 700; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  .site .name span:last-child { font-size: 12px; color: var(--teal-dark); font-weight: 500; }
+  .site .sample {
+    margin-top: 10px; font-size: 13.5px; color: var(--muted);
+    border-left: 3px solid color-mix(in srgb, var(--teal) 55%, var(--line));
+    padding-left: 10px; line-height: 1.55;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .site .stats { margin-top: 10px; font-size: 12px; color: var(--muted); display: flex; gap: 12px; }
+
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+  .metric {
+    background: var(--card); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 20px 18px; box-shadow: var(--shadow); text-align: left;
+  }
+  .metric .big { font-size: 34px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+  .metric .big .unit { font-size: 15px; font-weight: 600; color: var(--muted); margin-left: 2px; }
+  .metric .label { margin-top: 6px; color: var(--muted); font-size: 13.5px; }
+
+  .quote {
+    background: linear-gradient(120deg, color-mix(in srgb, var(--teal) 10%, var(--card)), color-mix(in srgb, var(--blue) 8%, var(--card)));
+    border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; box-shadow: var(--shadow);
+    font-size: 15.5px; color: var(--fg);
+  }
+  .quote b { color: var(--teal-dark); }
+  .quote .small { color: var(--muted); font-size: 13.5px; margin-top: 8px; }
+
+  pre {
+    background: color-mix(in srgb, var(--fg) 92%, #000);
+    color: #d7f5f3; border-radius: 14px; padding: 18px 20px; overflow: auto;
+    font-size: 13.5px; line-height: 1.7; border: 1px solid var(--line);
+  }
+  code { font-family: "Cascadia Code", "JetBrains Mono", Consolas, monospace; }
+  pre .c { color: #7fa7b5; }
+  .inline-code {
+    background: color-mix(in srgb, var(--fg) 8%, transparent);
+    border: 1px solid var(--line); border-radius: 6px; padding: 1px 6px;
+    font-family: "Cascadia Code", Consolas, monospace; font-size: 13px;
+  }
+
+  footer { border-top: 1px solid var(--line); margin-top: 30px; padding: 28px 0 44px; color: var(--muted); font-size: 13.5px; }
+  footer .row { display: flex; gap: 18px; flex-wrap: wrap; align-items: center; }
+  footer a { color: var(--teal); text-decoration: none; }
+
+  .note { font-size: 12.5px; color: var(--muted); margin-top: 10px; }
+  .pill-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 18px; }
+  .pill { font-size: 12.5px; color: var(--muted); border: 1px solid var(--line); background: var(--card); padding: 3px 11px; border-radius: 999px; }
+
+  @media (max-width: 900px) {
+    .hero-grid { grid-template-columns: 1fr; }
+    .hero-art { order: -1; max-height: 220px; }
+    .grid.three, .sites, .metrics { grid-template-columns: repeat(2, 1fr); }
+    .steps { grid-template-columns: repeat(2, 1fr); }
+    h1 { font-size: 36px; }
+  }
+  @media (max-width: 560px) {
+    .grid.three, .sites, .metrics, .steps, .split, .grid.two { grid-template-columns: 1fr; }
+    h1 { font-size: 30px; }
+    nav .links { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="inner">
+    <div class="brand"><span class="fish">🐟</span> 鱼跃</div>
+    <div class="links">
+      <a href="#why">为什么做</a>
+      <a href="#how">怎么玩</a>
+      <a href="#what">她能逛什么</a>
+      <a href="#result">实测</a>
+      <a href="#run">跑起来</a>
+      <a href="https://github.com/TorinTao/dsh-aurabot-fishleap" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap hero-grid">
+    <div>
+      <div class="kicker">Lexmount 云平台 · 真实任务挑战投稿</div>
+      <h1>给她一个<br><span class="accent">能自己上网</span>的小插件</h1>
+      <p class="lead">
+        鱼跃（<span class="inline-code">dsh-aurabot-fishleap</span>）是给 AI 宠物「大肥鱼」做的小工具：
+        她自己去逛微博、知乎、小红书、豆瓣、网易云，看看今天网上有什么好玩的；
+        登录只需要主人帮她扫一次码。
+      </p>
+      <div class="cta">
+        <a class="btn primary" href="https://github.com/TorinTao/dsh-aurabot-fishleap" target="_blank" rel="noreferrer">看代码 / 部署</a>
+        <a class="btn" href="#how">她怎么逛的</a>
+      </div>
+      <div class="pill-row">
+        <span class="pill">Lexmount 云浏览器</span>
+        <span class="pill">人工扫码一次</span>
+        <span class="pill">只读、不捣乱</span>
+        <span class="pill">开源 · MIT</span>
+      </div>
+    </div>
+    <div class="hero-art" aria-hidden="true">
+      <svg viewBox="0 0 360 300" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#2dd4bf"/>
+            <stop offset="1" stop-color="#2563eb"/>
+          </linearGradient>
+          <linearGradient id="g2" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0" stop-color="#99f6e4"/>
+            <stop offset="1" stop-color="#bfdbfe"/>
+          </linearGradient>
+        </defs>
+        <ellipse cx="180" cy="248" rx="120" ry="16" fill="url(#g1)" opacity=".14"/>
+        <g transform="translate(30 20)">
+          <path d="M250 118c0 44-38 78-92 78-34 0-62-12-84-32l-34 30c-6 5-14 1-13-7l7-49c-2-7-3-13-3-20 0-44 38-78 92-78 30 0 54 9 74 26l33-29c6-5 14-1 13 7l-6 40c8 12 13 22 13 34z" fill="url(#g1)"/>
+          <ellipse cx="92" cy="104" rx="60" ry="44" fill="#fff" opacity=".18"/>
+          <circle cx="150" cy="104" r="11" fill="#0b141a"/>
+          <circle cx="153" cy="100" r="4" fill="#fff"/>
+          <path d="M190 132c10 6 22 8 34 6" stroke="#fff" stroke-width="4" stroke-linecap="round" fill="none" opacity=".65"/>
+          <g opacity=".9">
+            <circle cx="262" cy="58" r="9" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+            <circle cx="292" cy="34" r="6" fill="none" stroke="#60a5fa" stroke-width="3"/>
+            <circle cx="308" cy="64" r="5" fill="none" stroke="#2dd4bf" stroke-width="3"/>
+          </g>
+          <path d="M30 200c22 10 44 10 66 0s44-10 66 0 44 10 66 0" stroke="url(#g2)" stroke-width="6" fill="none" stroke-linecap="round"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <section id="why">
+    <div class="section-head">
+      <h2>为什么做这个</h2>
+      <p>不是给她找工作，是给她找点乐子。</p>
+    </div>
+    <div class="grid three">
+      <div class="card">
+        <div class="icon">🥱</div>
+        <h3>她也会无聊</h3>
+        <p>大肥鱼住在 QQ 里陪我聊天。没人找她的时候，她也想看看今天微博在聊什么、知乎有什么热闹、小红书有什么新鲜事。</p>
+      </div>
+      <div class="card">
+        <div class="icon">🔐</div>
+        <h3>网站不登录不给看</h3>
+        <p>知乎、小红书、豆瓣这些地方，不登录只给你一个「请先登录」的壳，普通人写个爬虫也抓不到正文。</p>
+      </div>
+      <div class="card">
+        <div class="icon">🙅</div>
+        <h3>不能让她碰密码</h3>
+        <p>让宠物记账号密码太危险。所以登录这件事交给主人：<b>手机扫一次码</b>，之后她自己去逛。</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="how">
+    <div class="section-head">
+      <h2>她怎么逛的</h2>
+      <p>一次扫码，换她随时上网的自由。</p>
+    </div>
+    <div class="steps">
+      <div class="step">
+        <div class="num">1</div>
+        <h3>主人帮她开个头</h3>
+        <p>她说「想逛小红书」时，插件自动打开一个云端浏览器登录窗口，截下二维码，发到 QQ 给她主人。</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h3>主人扫一下码</h3>
+        <p>主人用手机扫码，插件自动确认登录成功，把登录状态记在云端——她以后不用再登。</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h3>她自己去逛</h3>
+        <p>她可以自己加网站、删网站、看热搜、读笔记、翻榜单，看到有意思的就记下来当聊天话题。</p>
+      </div>
+      <div class="step">
+        <div class="num">4</div>
+        <h3>过期了再喊人</h3>
+        <p>登录会过期（比如网易云大概两天）。她读不到会直说「需要重新登录」，主人再扫一次就好。</p>
+      </div>
+    </div>
+
+    <div class="split" style="margin-top:16px">
+      <div class="card">
+        <h3>☁️ Lexmount 云平台做什么</h3>
+        <ul class="clean">
+          <li>在云端真正打开网页（会执行页面里的脚本）</li>
+          <li>保持登录状态，一个浏览器配置能同时登好几个网站</li>
+          <li>把页面正文取回来，把登录二维码截下来</li>
+          <li>主人随时可以打开云端浏览器「看着她逛」，也能接管</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>🙋 人做什么</h3>
+        <ul class="clean">
+          <li>第一次每个网站用手机扫一次码（她不碰密码）</li>
+          <li>登录过期时补扫一次</li>
+          <li>偶尔在 QQ/面板里点一下「验证」确认</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="what">
+    <div class="section-head">
+      <h2>她能逛什么</h2>
+      <p>一次逛 6 个地方，把「今天有什么好玩的」带回来。（下面是这次真实逛到的内容节选）</p>
+    </div>
+    <div class="sites">
+      <div class="site">
+        <div class="name"><span>微博热搜</span><span>不用登录</span></div>
+        <div class="sample">习近平同加蓬总统会谈 · TheShy 希望 Chovy 夺冠 · 多地中小学延迟到校取消早读……</div>
+        <div class="stats"><span>1407 字</span><span>4.8 秒</span></div>
+      </div>
+      <div class="site">
+        <div class="name"><span>知乎热榜</span><span>要登录</span></div>
+        <div class="sample">S16 半决赛 GEN 3:0 淘汰 iG 晋级决赛 · 如何正确使用知乎？ · 辟谣专区……</div>
+        <div class="stats"><span>8007 字</span><span>10.2 秒</span></div>
+      </div>
+      <div class="site">
+        <div class="name"><span>豆瓣电影口碑榜</span><span>要登录</span></div>
+        <div class="sample">肖申克的救赎 · 影讯与购票 · 2025 年度榜单 · 影评……</div>
+        <div class="stats"><span>2814 字</span><span>4.4 秒</span></div>
+      </div>
+      <div class="site">
+        <div class="name"><span>今日头条</span><span>要登录</span></div>
+        <div class="sample">微软 AI 算力租赁收缩 · DeepSeek：中断问题已修复 · 林昀儒 4:0 温瑞博……</div>
+        <div class="stats"><span>2592 字</span><span>6.6 秒</span></div>
+      </div>
+      <div class="site">
+        <div class="name"><span>小红书笔记</span><span>要登录</span></div>
+        <div class="sample">不愧是最尊重镜头的人 · 无畏契约在成都的福利局 · 兔娘 · 成都欢乐谷惊奇潮玩节……</div>
+        <div class="stats"><span>573 字</span><span>8.3 秒</span></div>
+      </div>
+      <div class="site">
+        <div class="name"><span>网易云热歌榜</span><span>要登录</span></div>
+        <div class="sample">热歌榜更新 22 首 · 飙升榜 · 新歌榜 · 原创榜 · 网易云中文说唱榜……</div>
+        <div class="stats"><span>8007 字</span><span>5.0 秒</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="result">
+    <div class="section-head">
+      <h2>实测数据</h2>
+      <p>2026-11-08 一次真实运行的结果。</p>
+    </div>
+    <div class="metrics">
+      <div class="metric"><div class="big">6<span class="unit">/6</span></div><div class="label">网站全部逛成功</div></div>
+      <div class="metric"><div class="big">~40<span class="unit">秒</span></div><div class="label">一轮逛完（含登录态复用）</div></div>
+      <div class="metric"><div class="big">3<span class="unit">/3</span></div><div class="label">对照实验：普通抓取全失败，云浏览器全成功</div></div>
+      <div class="metric"><div class="big">7<span class="unit">个工具</span></div><div class="label">小肥鱼可以自己加站/删站/开登录/读内容</div></div>
+    </div>
+
+    <div class="quote" style="margin-top:16px">
+      对照实验里，同样三个页面（知乎热榜、豆瓣搜索、小红书笔记）：
+      普通抓取 → <b>全都读不到</b>（登录墙 / 空壳页）；换成 Lexmount 云浏览器 + 登录状态 → <b>都读到正文</b>，分别约 8000、1300、570 字。
+      <div class="small">这就是为什么「宠物自己上网」必须靠云浏览器 + 持久登录，而不是普通爬虫。</div>
+    </div>
+
+    <div class="note">数据来自仓库里的 <span class="inline-code">materials/brief-2026-11-08/result.json</span> 与 <span class="inline-code">materials/compare/</span>，可复现。</div>
+  </section>
+
+  <section id="run">
+    <div class="section-head">
+      <h2>想自己跑一遍？</h2>
+      <p>一台装了 Node 的电脑 + 一个 Lexmount 账号就行。</p>
+    </div>
+    <pre><code><span class="c"># 1) 准备：Node.js ≥ 22，装好 Lexmount 的 browser-cli / webfetch-cli</span>
+node --version
+browser-cli doctor
+
+<span class="c"># 2) 启动小面板：浏览器打开 http://127.0.0.1:4571/</span>
+node src/cli.mjs serve
+
+<span class="c"># 3) 让她逛一轮（命令行也行）</span>
+node src/cli.mjs brief
+
+<span class="c"># 4) 接到 QQ：把 Aurobot 桥接模块装进本机 Aurobot</span>
+node scripts/install-aurabot-module.mjs
+
+<span class="c"># 然后在 QQ 里跟大肥鱼说：「帮我加个快手」，她会把二维码发给你</span></code></pre>
+    <div class="note">
+      部署手册：<a href="https://github.com/TorinTao/dsh-aurabot-fishleap/blob/main/docs/DEPLOY.md" target="_blank" rel="noreferrer">docs/DEPLOY.md</a>
+      · 接口文档：<a href="https://github.com/TorinTao/dsh-aurabot-fishleap/blob/main/docs/API.md" target="_blank" rel="noreferrer">docs/API.md</a>
+      · 代码：<a href="https://github.com/TorinTao/dsh-aurabot-fishleap" target="_blank" rel="noreferrer">github.com/TorinTao/dsh-aurabot-fishleap</a>
+    </div>
+  </section>
+
+  <section id="limit">
+    <div class="section-head">
+      <h2>说点实话</h2>
+      <p>目前还做不到、或者故意不做的部分。</p>
+    </div>
+    <div class="grid two">
+      <div class="card">
+        <h3>已知限制</h3>
+        <ul class="clean">
+          <li>登录会过期（网易云约两天），需要主人补扫一次</li>
+          <li>免费/Pro 版最多 10 个登录配置，满了会自动复用已有的</li>
+          <li>贴吧卡过一次「锁定」（云平台侧），不影响别的网站</li>
+          <li>单次内容默认截断 8000 字</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>故意不做的</h3>
+        <ul class="clean">
+          <li>不点赞、不评论、不发帖——只带她看，不让她乱动别人的内容</li>
+          <li>不让她接触账号密码和凭证</li>
+          <li>不做「全自动登录」这种绕过验证的事</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="row">
+      <b>🐟 鱼跃</b>
+      <span>·</span>
+      <span>给大肥鱼的上网小插件</span>
+      <span>·</span>
+      <span>Lexmount 云平台真实任务挑战投稿</span>
+      <span>·</span>
+      <a href="https://github.com/TorinTao/dsh-aurabot-fishleap" target="_blank" rel="noreferrer">GitHub</a>
+    </div>
+    <div class="note">本页不含任何账号、密码或 API Key；页面内容来自真实运行结果，可对照仓库复现。</div>
+  </div>
+</footer>
+
+</body>
+</html>

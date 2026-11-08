@@ -43,6 +43,8 @@
 
 ## 可核验材料
 
+- 在线介绍页（Yours）：<https://yours.lexmount.cn/artifact-site/s/1FTe4vUCOcmU>
+
 - 简报正文：`materials/brief-2026-11-08/brief.md`
 - 网页版简报（可直接打开）：`materials/brief-2026-11-08/brief.html`
 - 原始结果（每个站点的字数/耗时/正文）：`materials/brief-2026-11-08/result.json`
