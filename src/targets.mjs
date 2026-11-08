@@ -1,0 +1,58 @@
+// 本次巡检的目标站点与读取方式（全部通过 Lexmount 云浏览器）
+// requiresLogin: 该站是否需要登录 Context（用来说明云浏览器/持久登录态的价值）
+export const TARGETS = [
+  {
+    key: 'weibo_hot',
+    name: '微博热搜',
+    home: 'https://s.weibo.com/top/summary',
+    requiresLogin: false,
+    how: '匿名浏览器读取热搜榜',
+    tool: 'weibo_hot',
+    args: {},
+  },
+  {
+    key: 'zhihu_hot',
+    name: '知乎热榜',
+    home: 'https://www.zhihu.com/hot',
+    requiresLogin: true,
+    how: '登录 Context 读取热榜',
+    tool: 'zhihu_read',
+    args: { url: 'https://www.zhihu.com/hot' },
+  },
+  {
+    key: 'douban_chart',
+    name: '豆瓣电影口碑榜',
+    home: 'https://movie.douban.com/chart',
+    requiresLogin: true,
+    how: '登录 Context 读取榜单',
+    tool: 'site_open',
+    args: { site: 'douban', query: 'https://movie.douban.com/chart' },
+  },
+  {
+    key: 'toutiao_home',
+    name: '今日头条首页',
+    home: 'https://www.toutiao.com/',
+    requiresLogin: true,
+    how: '登录 Context 读取首页要闻',
+    tool: 'site_open',
+    args: { site: 'toutiao', query: 'https://www.toutiao.com/' },
+  },
+  {
+    key: 'xhs_note',
+    name: '小红书笔记',
+    home: 'https://www.xiaohongshu.com/explore/6ae5c407000000001b01e036?xsec_token=AB-FiEzaIGg3jje4gZd14HMFdoDII1KK8if2Be0wHiglg=&xsec_source=',
+    requiresLogin: true,
+    how: '登录 Context 读取笔记正文与评论',
+    tool: 'xhs_read',
+    args: { url: 'https://www.xiaohongshu.com/explore/6ae5c407000000001b01e036?xsec_token=AB-FiEzaIGg3jje4gZd14HMFdoDII1KK8if2Be0wHiglg=&xsec_source=' },
+  },
+  {
+    key: 'netease_top',
+    name: '网易云音乐（热歌）',
+    home: 'https://music.163.com/#/discover/toplist',
+    requiresLogin: true,
+    how: '登录 Context 读取排行榜（iframe 内页）',
+    tool: 'site_open',
+    args: { site: 'netease', query: 'https://music.163.com/#/discover/toplist' },
+  },
+]

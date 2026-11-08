@@ -1,0 +1,20 @@
+{
+  "zhihuContextId": "",
+  "enabled": true,
+  "doubanContextId": "",
+  "writeDryRun": true,
+  "browserPath": "",
+  "dailyXhs": 10,
+  "toutiaoContextId": "",
+  "dailyWeibo": 20,
+  "dailyZhihu": 30,
+  "webfetchPath": "",
+  "tiebaContextId": "",
+  "neteaseContextId": "",
+  "maxChars": 8000,
+  "dailySite": 30,
+  "writeEnabled": false,
+  "minGapSec": 8,
+  "dailyWrite": 5,
+  "xhsContextId": ""
+}
