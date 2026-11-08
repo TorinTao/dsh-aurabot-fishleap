@@ -50,6 +50,12 @@
 - 对照实验：`materials/compare/compare.md`、`materials/compare/compare.json`
 - 代码：`src/`（独立运行，不依赖其它项目）；复现：`node src/cli.mjs brief`
 
+## 可交互界面（附加）
+
+- 本地 Web 面板：`node src/cli.mjs serve` → <http://127.0.0.1:4571/>，可添加/删除网站、发起扫码登录、验证、读一页、一键巡检；
+- HTTP API：可被脚本 / Agent / QQ 机器人调用，其中「开登录窗口 → 人扫码 → 验证」是典型 human-in-the-loop 流程（`docs/API.md`）；
+- Aurobot 桥接：在 QQ 里让小肥鱼加网站、发二维码、等主人扫码、再验证（`docs/DEPLOY.md`）。
+
 ## 使用到的 Lexmount 能力
 
 - 云浏览器 `browser-cli`：Context 创建/复用、会话创建、打开页面、取页面正文、截图

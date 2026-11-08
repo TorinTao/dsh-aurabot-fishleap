@@ -1,13 +1,15 @@
 {
   "name": "lexmount-patrol",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "基于 Lexmount 云浏览器的多平台只读巡检工具：一次读取多个中文站点，产出带来源的巡检简报（Markdown + HTML）",
+  "description": "基于 Lexmount 云浏览器的多平台巡检 / 网站管家：可增删网站、人工扫码验证、产出带来源的巡检简报（HTTP API + 本地面板 + Aurobot 桥接）",
   "scripts": {
     "brief": "node src/cli.mjs brief",
     "status": "node src/cli.mjs status",
-    "tools": "node src/cli.mjs tools"
+    "tools": "node src/cli.mjs tools",
+    "serve": "node src/cli.mjs serve",
+    "panel": "node src/cli.mjs serve"
   },
   "engines": {
     "node": ">=22"

@@ -22,6 +22,7 @@ async function main() {
   node src/cli.mjs sites                          巡检站点清单
   node src/cli.mjs brief                          跑一次巡检 → out/<时间>/
   node src/cli.mjs compare                        匿名抓取 vs 云浏览器 对照实验
+  node src/cli.mjs serve [端口]                    启动本地 HTTP 服务（面板 + API，默认 4571）
   node src/cli.mjs read <tool> '<json 参数>'       直接调工具
   node src/cli.mjs login <站点>                    开登录窗口（扫码后运行脚本保存 Context）
 `)
@@ -49,6 +50,11 @@ async function main() {
   if (cmd === 'compare') {
     const { runCompare } = await import('./compare.mjs')
     await runCompare()
+    return
+  }
+  if (cmd === 'serve') {
+    if (rest[0]) process.env.LEXMOUNT_API_PORT = String(rest[0])
+    await import('./server.mjs')
     return
   }
   if (cmd === 'read') {

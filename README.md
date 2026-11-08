@@ -55,17 +55,29 @@ Lexmount 云平台
 - **限流与重试**：同一站点两次读取至少间隔 8 秒；单站失败自动重试一次；会话关闭后 Context 约 25 秒才解锁，程序会等待。
 - **只读**：这个工具只读公开内容与登录态可见内容，不点赞、不评论、不发帖。
 
+## 能力一览
+
+| 能力 | 入口 |
+|---|---|
+| 多平台巡检（6 站，带来源的简报） | `node src/cli.mjs brief` / 面板「一键巡检」 |
+| 添加 / 删除网站 | `POST /api/sites`、`DELETE /api/sites/:key` / 面板「添加网站」 |
+| 人工扫码登录（human-in-the-loop） | `POST /api/sites/:key/connect` → 二维码 → `/verify`；或在 QQ 里让小肥鱼发二维码 |
+| 读一页 / 搜索 | `POST /api/sites/:key/read`、`POST /api/tool` |
+| 对照实验 | `node src/cli.mjs compare` |
+| 本地面板 | `node src/cli.mjs serve` → <http://127.0.0.1:4571/> |
+| 跟 Aurobot 联动 | 安装桥接模块后，小肥鱼有 7 个 `lx_*` 工具 |
+
 ## 快速开始
 
 前置：Node.js ≥ 22，Lexmount 账号与 `browser-cli` / `webfetch-cli`（见 [docs/SETUP.md](docs/SETUP.md)）。
 
 ```bash
-# 1. 准备登录 Context（每个站点一次，扫码）
-node scripts/setup-context.mjs zhihu
-node scripts/setup-context.mjs xiaohongshu
-node scripts/setup-context.mjs douban
+# 1. 启动本地服务（面板 + API）
+node src/cli.mjs serve            # http://127.0.0.1:4571
 
-# 2. 检查
+# 2. 浏览器打开面板：添加网站 → 连接 → 手机扫码 → 验证
+#    也可以命令行建 Context（等价）：
+node scripts/setup-context.mjs zhihu
 node src/cli.mjs status
 
 # 3. 跑巡检
@@ -74,6 +86,8 @@ node src/cli.mjs brief
 # 4. 对照实验（可选）
 node src/cli.mjs compare
 ```
+
+HTTP API 见 [docs/API.md](docs/API.md)；同机部署 Aurobot 见 [docs/DEPLOY.md](docs/DEPLOY.md)。
 
 输出在 `out/<时间戳>/`，同时覆盖 `out/latest/`。
 
@@ -90,6 +104,14 @@ src/
   compare.mjs        匿名抓取 vs 云浏览器 对照实验
   cli.mjs            命令行入口
 scripts/setup-context.mjs  引导式登录（扫码 → 保存 Context）
+scripts/install-aurabot-module.mjs  把 Aurobot 桥接模块装进本机 Aurobot
+src/registry.mjs           站点注册表（内置 + 自定义，增删）
+src/login.mjs              登录流程（connect / verify / cancel，人机验证）
+src/server.mjs             本地 HTTP 服务 + 面板
+web/index.html             本地 Web 面板（无构建、原生 JS）
+integrations/aurabot/      Aurobot 桥接模块（7 个 lx_* 工具）
+docs/API.md                HTTP API 文档
+docs/DEPLOY.md             部署手册（先 Aurobot 后本插件）
 out/latest/          最近一次运行的简报
 materials/           提交用材料（本次运行结果 + 对照实验）
 docs/SETUP.md        环境与登录态说明
@@ -106,6 +128,8 @@ docs/SETUP.md        环境与登录态说明
 ## 与 Aurobot 的关系
 
 本仓库是**独立工具**：只依赖 Lexmount 的 `browser-cli` / `webfetch-cli`，不依赖、不导入任何 Aurobot / DSH 代码，可在任意装了 Node 的机器上运行。
+
+如果想让小肥鱼（Aurobot）能自己加网站、把二维码发给主人扫码，可以在**同一台机器**上按「先 Aurobot、后本插件」的顺序部署，并安装 `integrations/aurabot/` 桥接模块（见 [docs/DEPLOY.md](docs/DEPLOY.md)）。桥接模块只通过本机 HTTP API 调用，不共享代码。
 
 ## 隐私
 

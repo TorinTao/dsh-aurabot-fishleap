@@ -1,0 +1,256 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lexmount 多平台巡检</title>
+<style>
+  :root { color-scheme: light dark; --bg:#f6f7f9; --fg:#1f2328; --muted:#6b7280; --card:#fff; --line:#e5e7eb; --accent:#2563eb; --ok:#16a34a; --bad:#dc2626; }
+  @media (prefers-color-scheme: dark) { :root { --bg:#0f1115; --fg:#e6e6e6; --muted:#9aa0a6; --card:#171a21; --line:#2a2f3a; --accent:#7aa2ff; --ok:#4ade80; --bad:#f87171; } }
+  * { box-sizing:border-box; }
+  body { margin:0; padding:28px 18px 80px; background:var(--bg); color:var(--fg); font:14px/1.65 -apple-system,BlinkMacSystemFont,"Segoe UI","Microsoft YaHei",sans-serif; }
+  main { max-width:1040px; margin:0 auto; display:grid; gap:16px; }
+  header { display:flex; align-items:center; gap:14px; flex-wrap:wrap; }
+  h1 { font-size:22px; margin:0; }
+  .muted { color:var(--muted); font-size:13px; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:16px 18px; }
+  .card h2 { font-size:15px; margin:0 0 10px; }
+  .row { display:flex; gap:10px; align-items:center; flex-wrap:wrap; }
+  .grow { flex:1; min-width:200px; }
+  input, select { background:transparent; color:inherit; border:1px solid var(--line); border-radius:9px; padding:8px 10px; font:inherit; }
+  input.wide { width:100%; }
+  button { border:1px solid var(--line); background:transparent; color:inherit; border-radius:9px; padding:6px 12px; cursor:pointer; font:inherit; }
+  button.primary { background:var(--accent); border-color:var(--accent); color:#fff; }
+  button:disabled { opacity:.45; cursor:not-allowed; }
+  .badge { font-size:12px; padding:1px 9px; border-radius:999px; border:1px solid var(--line); color:var(--muted); }
+  .badge.ok { color:var(--ok); border-color:var(--ok); }
+  .badge.fail { color:var(--bad); border-color:var(--bad); }
+  .badge.wait { color:var(--accent); border-color:var(--accent); }
+  .site { display:flex; align-items:flex-start; gap:12px; padding:10px 0; border-top:1px solid var(--line); }
+  .site:first-of-type { border-top:none; }
+  .site .meta { min-width:130px; }
+  .site .ops { display:flex; gap:6px; flex-wrap:wrap; }
+  .qr { display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; }
+  .qr img { width:200px; border-radius:10px; border:1px solid var(--line); background:#fff; }
+  pre { background:rgba(127,127,127,.08); border-radius:10px; padding:12px; max-height:320px; overflow:auto; white-space:pre-wrap; word-break:break-word; font-size:13px; }
+  a { color:var(--accent); }
+  .hidden { display:none; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>Lexmount 多平台巡检</h1>
+    <span id="health" class="muted">连接中…</span>
+    <span class="grow"></span>
+    <button id="btnRefresh">刷新</button>
+  </header>
+
+  <section class="card">
+    <h2>站点</h2>
+    <div id="sites" class="muted">加载中…</div>
+  </section>
+
+  <section id="pendingBox" class="card hidden">
+    <h2>等待人工验证</h2>
+    <div id="pending"></div>
+  </section>
+
+  <section class="card">
+    <h2>添加网站（自动建 Context，扫码登录）</h2>
+    <div class="row"><input id="fName" class="grow" placeholder="名字，例如 快手"></div>
+    <div class="row" style="margin-top:8px"><input id="fHome" class="grow" placeholder="首页 https://www.example.com/"></div>
+    <div class="row" style="margin-top:8px"><input id="fLogin" class="grow" placeholder="登录页（留空=首页）"></div>
+    <div class="row" style="margin-top:8px"><input id="fSearch" class="grow" placeholder="站内搜索模板（可选），关键词用 {q}，例 https://example.com/search?q={q}"></div>
+    <div class="row" style="margin-top:10px"><button id="btnAdd" class="primary">添加并连接</button></div>
+  </section>
+
+  <section class="card">
+    <h2>读一页 / 搜一下</h2>
+    <div class="row">
+      <select id="readSite" class="grow"></select>
+      <input id="readQuery" class="grow" style="flex:2" placeholder="https://… 或 关键词">
+      <button id="btnRead">读取</button>
+    </div>
+    <pre id="readOut" class="hidden"></pre>
+  </section>
+
+  <section class="card">
+    <h2>巡检简报</h2>
+    <div class="row">
+      <button id="btnBrief" class="primary">一键巡检</button>
+      <span id="briefState" class="muted"></span>
+      <a id="reportLink" href="/report" target="_blank" class="hidden">打开简报 ↗</a>
+    </div>
+  </section>
+
+  <section class="card">
+    <h2>用量</h2>
+    <pre id="usage">…</pre>
+  </section>
+</main>
+<script>
+const token = new URLSearchParams(location.search).get('token') || '';
+const H = token ? { 'x-lexmount-token': token } : {};
+async function api(path, opt = {}) {
+  const r = await fetch(path, { ...opt, headers: { ...H, ...(opt.body ? { 'Content-Type': 'application/json' } : {}), ...(opt.headers || {}) } });
+  const j = await r.json().catch(() => ({}));
+  if (!j.ok) throw new Error(j.error || ('HTTP ' + r.status));
+  return j;
+}
+const $ = (id) => document.getElementById(id);
+const esc = (s) => String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+function statusBadge(s) {
+  if (!s || !s.status) return '<span class="badge">未检查</span>';
+  return s.status.ok ? '<span class="badge ok">已登录</span>' : `<span class="badge fail">${esc(s.status.note || '未登录')}</span>`;
+}
+function pendingBadge(key, pending) {
+  return pending && pending[key] ? '<span class="badge wait">等待登录</span>' : '';
+}
+
+let LAST = { sites: [], pending: {} };
+async function refresh() {
+  $('health').textContent = '';
+  try {
+    const h = await api('/api/health');
+    $('health').textContent = `服务正常 · 运行 ${h.uptimeSec}s${h.authRequired ? ' · 已开鉴权' : ''}`;
+    const d = await api('/api/sites');
+    LAST = d;
+    renderSites(d.sites, d.pending);
+    renderPending(d.pending, d.sites);
+    const u = await api('/api/usage');
+    $('usage').textContent = u.message || '';
+  } catch (e) { $('health').textContent = '服务不可用：' + e.message; }
+}
+
+function renderSites(sites, pending) {
+  const box = $('sites');
+  box.className = '';
+  box.innerHTML = sites.map((s) => `
+    <div class="site" data-key="${esc(s.key)}">
+      <div class="meta"><b>${esc(s.name)}</b><br><span class="muted">${s.custom ? '自定义' : '内置'}</span></div>
+      <div class="grow">
+        <div class="row">${statusBadge(s)} ${pendingBadge(s.key, pending)} <span class="muted">${esc(s.home || '')}</span></div>
+        <div class="ops" style="margin-top:6px">
+          <button data-op="connect" data-key="${esc(s.key)}">连接</button>
+          <button data-op="verify" data-key="${esc(s.key)}">验证</button>
+          <button data-op="cancel" data-key="${esc(s.key)}">取消</button>
+          ${s.custom ? `<button data-op="remove" data-key="${esc(s.key)}">删除</button>` : ''}
+          <button data-op="read" data-key="${esc(s.key)}">读取</button>
+        </div>
+      </div>
+    </div>`).join('');
+  // 读一页下拉
+  const sel = $('readSite');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">选择站点</option>' + sites.map((s) => `<option value="${esc(s.key)}">${esc(s.name)}</option>`).join('');
+  if (cur) sel.value = cur;
+}
+
+function renderPending(pending, sites) {
+  const keys = Object.keys(pending || {});
+  if (!keys.length) { $('pendingBox').classList.add('hidden'); return; }
+  $('pendingBox').classList.remove('hidden');
+  $('pending').innerHTML = keys.map((k) => {
+    const p = pending[k];
+    const site = (sites || []).find((s) => s.key === k);
+    const name = site ? site.name : k;
+    const shot = `/api/shot/${encodeURIComponent(k)}.png?t=${p.shotAt || p.startedAt || Date.now()}`;
+    return `
+      <div class="qr" style="border-top:1px solid var(--line); padding-top:12px">
+        <img src="${shot}" alt="登录二维码">
+        <div class="grow">
+          <div><b>${esc(name)}</b> <span class="badge wait">等待人工扫码</span></div>
+          <p class="muted">用手机扫码/输验证码；也可以打开下面的云端浏览器链接手动登录。<br>完成后点「验证」。</p>
+          <p><a href="${esc(p.inspectUrl || '')}" target="_blank" rel="noreferrer">打开云端浏览器登录页 ↗</a></p>
+          <div class="row">
+            <button class="primary" data-op="verify" data-key="${esc(k)}">验证</button>
+            <button data-op="cancel" data-key="${esc(k)}">取消</button>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+$('sites').addEventListener('click', async (e) => {
+  const b = e.target.closest('button[data-op]');
+  if (!b) return;
+  const key = b.dataset.key, op = b.dataset.op;
+  b.disabled = true;
+  try {
+    if (op === 'connect') { await api(`/api/sites/${encodeURIComponent(key)}/connect`, { method: 'POST', body: '{}' }); }
+    if (op === 'verify') {
+      const r = await api(`/api/sites/${encodeURIComponent(key)}/verify`, { method: 'POST', body: '{}' });
+      alert(r.message || (r.loggedIn ? '已登录' : '还没登录完成'));
+    }
+    if (op === 'cancel') { await api(`/api/sites/${encodeURIComponent(key)}/cancel`, { method: 'POST', body: '{}' }); }
+    if (op === 'remove') { if (confirm('删除这个自定义站点？')) await api(`/api/sites/${encodeURIComponent(key)}`, { method: 'DELETE' }); }
+    if (op === 'read') { $('readSite').value = key; $('readQuery').focus(); }
+    await refresh();
+  } catch (e) { alert('失败：' + e.message); }
+  finally { b.disabled = false; }
+});
+
+$('pending').addEventListener('click', async (e) => {
+  const b = e.target.closest('button[data-op]');
+  if (!b) return;
+  const key = b.dataset.key, op = b.dataset.op;
+  b.disabled = true;
+  try {
+    if (op === 'verify') {
+      const r = await api(`/api/sites/${encodeURIComponent(key)}/verify`, { method: 'POST', body: '{}' });
+      alert(r.message || (r.loggedIn ? '已登录' : '还没登录完成'));
+    } else {
+      await api(`/api/sites/${encodeURIComponent(key)}/cancel`, { method: 'POST', body: '{}' });
+    }
+    await refresh();
+  } catch (e) { alert('失败：' + e.message); }
+  finally { b.disabled = false; }
+});
+
+$('btnAdd').addEventListener('click', async () => {
+  const body = { name: $('fName').value.trim(), home: $('fHome').value.trim(), loginUrl: $('fLogin').value.trim(), searchTemplate: $('fSearch').value.trim() };
+  if (!body.name || !body.home) return alert('名字和首页必填');
+  $('btnAdd').disabled = true;
+  try {
+    const r = await api('/api/sites', { method: 'POST', body: JSON.stringify(body) });
+    await api(`/api/sites/${encodeURIComponent(r.site.key)}/connect`, { method: 'POST', body: '{}' });
+    $('fName').value = $('fHome').value = $('fLogin').value = $('fSearch').value = '';
+    await refresh();
+  } catch (e) { alert('失败：' + e.message); }
+  finally { $('btnAdd').disabled = false; }
+});
+
+$('btnRead').addEventListener('click', async () => {
+  const key = $('readSite').value, query = $('readQuery').value.trim();
+  if (!key || !query) return alert('选站点、填链接或关键词');
+  $('btnRead').disabled = true; $('readOut').classList.remove('hidden'); $('readOut').textContent = '读取中…';
+  try {
+    const r = await api(`/api/sites/${encodeURIComponent(key)}/read`, { method: 'POST', body: JSON.stringify({ query }) });
+    $('readOut').textContent = r.message || '(空)';
+  } catch (e) { $('readOut').textContent = '失败：' + e.message; }
+  finally { $('btnRead').disabled = false; }
+});
+
+$('btnBrief').addEventListener('click', async () => {
+  $('btnBrief').disabled = true; $('reportLink').classList.add('hidden');
+  $('briefState').textContent = '巡检中…';
+  try {
+    const r = await api('/api/brief', { method: 'POST', body: '{}' });
+    const id = r.jobId;
+    for (;;) {
+      await new Promise((res) => setTimeout(res, 3000));
+      const j = await api('/api/brief/' + encodeURIComponent(id));
+      if (j.job.status === 'done') { $('briefState').textContent = `完成：${j.job.summary.ok}/${j.job.summary.total}`; $('reportLink').classList.remove('hidden'); break; }
+      if (j.job.status === 'error') { $('briefState').textContent = '失败：' + j.job.error; break; }
+    }
+  } catch (e) { $('briefState').textContent = '失败：' + e.message; }
+  finally { $('btnBrief').disabled = false; }
+});
+
+$('btnRefresh').addEventListener('click', refresh);
+refresh();
+</script>
+</body>
+</html>
